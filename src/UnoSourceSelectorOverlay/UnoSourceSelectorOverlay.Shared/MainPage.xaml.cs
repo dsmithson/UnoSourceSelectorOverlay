@@ -29,17 +29,43 @@ namespace UnoSourceSelectorOverlay
         public MainPage()
         {
             this.InitializeComponent();
+            sourceList.DoubleTapped += SourceList_DoubleTapped;
+        }
 
-            CoreWindow.GetForCurrentThread().Dispatcher.AcceleratorKeyActivated += Dispatcher_AcceleratorKeyActivated;
+        private async void SourceList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            //Select the currently selected source in our listView
+            if (sourceList.SelectedItems.Count > 0)
+                await viewModel.SelectActiveSource(viewModel.SelectedSource);
+        }
+
+        private async void sourceList_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Enter)
+            {
+                //Select the currently selected source in our listView
+                if (sourceList.SelectedItems.Count > 0)
+                    await viewModel.SelectActiveSource(viewModel.SelectedSource);
+            }
+
+#if SKIA
+            //HACKS for Skia to handle up/down arrow presses
+            else if (viewModel.SourceList != null && (e.Key == VirtualKey.Up || e.Key == VirtualKey.Down))
+            {
+                int selectedIndex = sourceList.SelectedItems.Count == 0 ? 0 : viewModel.SourceList.IndexOf((SourceViewModel)sourceList.SelectedItems[0]);
+
+                if(e.Key == VirtualKey.Up)
+                    viewModel.SelectedSource = viewModel.SourceList[Math.Max(0, selectedIndex - 1)];
+                else
+                    viewModel.SelectedSource = viewModel.SourceList[Math.Min(viewModel.SourceList.Count - 1, selectedIndex + 1)];
+            }
+#endif
         }
 
         private VirtualKey lastKey;
-        private async void Dispatcher_AcceleratorKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs e)
+        private async void page_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            if (e.EventType != CoreAcceleratorKeyEventType.KeyDown)
-                return;
-
-            if (e.VirtualKey == VirtualKey.Scroll)
+            if (e.Key == VirtualKey.Scroll)
             {
                 if (lastKey == VirtualKey.Scroll)
                 {
@@ -56,20 +82,16 @@ namespace UnoSourceSelectorOverlay
                     lastKey = VirtualKey.A;
                     return;
                 }
+                e.Handled = true;
             }
-            else if (e.VirtualKey == VirtualKey.Escape)
+            else if (e.Key == VirtualKey.Escape)
             {
                 //Hide the menu on return or enter
                 viewModel.MenuVisibility = Visibility.Collapsed;
-            }
-            else if (e.VirtualKey == VirtualKey.Enter)
-            {
-                //Select the currently selected source in our listView
-                if(sourceList.SelectedItems.Count > 0)
-                    await viewModel.SelectActiveSource(viewModel.SelectedSource);
+                e.Handled = true;
             }
 
-            lastKey = e.VirtualKey;
+            lastKey = e.Key;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

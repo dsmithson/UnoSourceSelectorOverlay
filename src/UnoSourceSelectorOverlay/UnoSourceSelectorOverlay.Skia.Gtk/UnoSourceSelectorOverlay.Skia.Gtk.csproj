@@ -4,6 +4,12 @@
     <OutputType Condition="'$(Configuration)'=='Debug'">Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;SKIA</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;SKIA</DefineConstants>
+  </PropertyGroup>
   <ItemGroup Condition="exists('..\UnoSourceSelectorOverlay.UWP')">
     <EmbeddedResource Include="..\UnoSourceSelectorOverlay.UWP\Package.appxmanifest" LogicalName="Package.appxmanifest" />
     <Content Include="..\UnoSourceSelectorOverlay.UWP\Assets\StoreLogo.png" Link="Assets\StoreLogo.png" />

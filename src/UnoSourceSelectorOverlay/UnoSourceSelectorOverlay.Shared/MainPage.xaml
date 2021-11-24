@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:UnoSourceSelectorOverlay.ViewModels"
+        PreviewKeyDown="page_PreviewKeyDown"
     mc:Ignorable="d"    
         Loaded="Page_Loaded"
         Width="1024"
@@ -35,7 +36,8 @@
                       VerticalAlignment="Stretch"
                       Background="Transparent"
                       ItemsSource="{Binding Path=SourceList}"
-                      SelectedItem="{Binding Path=SelectedSource, Mode=TwoWay}">
+                      SelectedItem="{Binding Path=SelectedSource, Mode=TwoWay}"
+                      KeyDown="sourceList_KeyDown">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:SourceViewModel">
                         <StackPanel Orientation="Horizontal">
